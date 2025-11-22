@@ -3,7 +3,8 @@ import os
 import gspread
 import streamlit as st
 
-DATA_DIR = "data"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
 def load_article(topic):
     path = os.path.join(DATA_DIR, topic, "article.txt")
@@ -19,6 +20,7 @@ def load_answers(topic):
     path = os.path.join(DATA_DIR, topic, "answers.json")
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 def compute_score(user_answers, correct_answers):
     normalized_correct = {int(k): (v if isinstance(v, list) else [v])
