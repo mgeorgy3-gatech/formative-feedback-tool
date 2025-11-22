@@ -66,7 +66,8 @@ def save_submission_local(record, topic):
         f.write(json.dumps(record) + "\n")
         
 def save_submission_to_sheets(record):
-    creds = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
+    # creds = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
+    creds = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
     gc = gspread.service_account_from_dict(creds)
     sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
     worksheet = sh.sheet1 
