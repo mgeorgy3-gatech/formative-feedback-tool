@@ -1,6 +1,8 @@
 # engine.py
 from openai import OpenAI
 import os, json, datetime as dt
+import streamlit as st
+from dotenv import load_dotenv
 from prompts import (
     build_system_prompt, 
     build_user_prompt)
@@ -9,8 +11,12 @@ from utils import (
     load_answers,
     compute_score,
     flatten_answers,
-    count_user_attempts
+    count_user_attempts,
+    save_submission_local,
+    save_submission_to_sheets
 )
+
+load_dotenv()
 
 # LLM
 def get_client():
@@ -64,7 +70,8 @@ def handle_submission(submission_payload):
     # Attempt 1 → formative → send to LLM
     feedback = None
     if attempt_number == 0 and score < 1:
-        feedback = get_feedback(article, correct_answers, user_answers)
+       # feedback = get_feedback(article, correct_answers, user_answers)
+        feedback = "Simulating feedback.."
 
     # Attempt 2 → NO feedback, just save
     # Attempt >2 → allowed but no feedback (simple)
@@ -80,7 +87,18 @@ def handle_submission(submission_payload):
     }
     record.update(flat)
 
-    save_submission(record, topic)
+    use_google_sheets = False
+    try:
+        _ = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
+        _ = st.secrets["GOOGLE_SHEET_ID"]
+        use_google_sheets = True
+    except Exception:
+        use_google_sheets = False
+
+    if use_google_sheets:
+        save_submission_to_sheets(record)
+    else:
+        save_submission_local(record, topic)
 
     return {
     "feedback": feedback,
