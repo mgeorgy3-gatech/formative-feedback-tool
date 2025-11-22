@@ -51,47 +51,37 @@ if not st.session_state.user_id and not st.session_state.quiz_started:
 # ---------------------------------------------------------
 # Thank you / results page
 # ---------------------------------------------------------
+# ---------------------------------------------------------
+# Thank you / results page
+# ---------------------------------------------------------
 if st.session_state.submitted:
     st.title("🎉 Thank You!")
 
-    # ✅ Always show score for both attempts
-    if "score" in st.session_state:
+    # ✅ Blocked (already took 2 attempts)
+    if st.session_state.attempt >= 3:
+        st.markdown("### ✅ Quiz Completed")
+        st.markdown("You have already taken two attempts for this topic.")
+        st.stop()
+
+    # ✅ Always show score when available
+    if st.session_state.score is not None:
         st.subheader("📊 Your Score")
         st.markdown(f"**{st.session_state.score}%**")
 
-    # ✅ Attempt 1 — show feedback
+    # ✅ Attempt 1 — feedback shown only if not perfect
     if st.session_state.attempt == 1:
-        st.markdown("Your first attempt has been submitted.")
-        st.subheader("📘 Feedback")
-        st.write(st.session_state.feedback)
+        if st.session_state.feedback:
+            st.subheader("📘 Feedback")
+            st.write(st.session_state.feedback)
+        else:
+            st.markdown("✅ Perfect score — no feedback needed!")
 
     # ✅ Attempt 2 — no feedback
     elif st.session_state.attempt == 2:
-        st.markdown("Your second attempt has been submitted.")
+        st.markdown("✅ Your second attempt has been submitted.")
         st.markdown("There is no feedback for the second attempt.")
 
-    # ✅ Any additional attempts
-    else:
-        st.markdown("You have already completed two attempts.")
-
     st.stop()
-
-# if st.session_state.submitted:
-#     st.title("🎉 Thank You!")
-
-#     if st.session_state.attempt == 1:
-#         st.markdown("Your first attempt has been submitted.")
-#         st.subheader("📘 Feedback")
-#         st.write(st.session_state.feedback)
-
-#     elif st.session_state.attempt == 2:
-#         st.markdown("Your second attempt has been submitted.")
-#         st.markdown("There is no feedback for the second attempt.")
-
-#     else:
-#         st.markdown("You have already completed two attempts.")
-
-#     st.stop()
 
 # ---------------------------------------------------------
 # Quiz page
@@ -124,29 +114,22 @@ if st.button("✅ Submit Answers"):
         "num_questions": len(questions),
     }
 
-    # ✅ Show waiting indicator while GPT feedback is generating
-    with st.spinner("🧠 Thinking... generating your personalized feedback..."):
+    # ✅ Show waiting indicator while processing
+    with st.spinner("🧠 Processing your submission..."):
         result = handle_submission(payload)
 
-    # ✅ Store results
-    st.session_state.feedback = result.get("feedback")
-    st.session_state.attempt = result.get("attempt")
-    st.session_state.score = result.get("score")
-    st.session_state.submitted = True
+    # ✅ If user exceeded attempts
+    if result.get("blocked"):
+        st.session_state.submitted = True
+        st.session_state.attempt = result.get("attempt")
+        st.session_state.feedback = None
+        st.session_state.score = None
+
+    else:
+        # ✅ Normal case (attempt 1 or 2)
+        st.session_state.feedback = result.get("feedback")
+        st.session_state.attempt = result.get("attempt")
+        st.session_state.score = result.get("score")
+        st.session_state.submitted = True
 
     st.rerun()
-
-
-# if st.button("✅ Submit Answers"):
-#     payload = {
-#         "user_id": st.session_state.user_id,
-#         "topic": topic,
-#         "answers": user_answers,
-#         "num_questions": len(questions),
-#     }
-
-#     result = handle_submission(payload)
-#     st.session_state.feedback = result.get("feedback")
-#     st.session_state.attempt = result.get("attempt")
-#     st.session_state.submitted = True
-#     st.rerun()

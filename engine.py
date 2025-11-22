@@ -60,16 +60,24 @@ def handle_submission(submission_payload):
     user_answers = submission_payload["answers"]
 
     correct_answers = load_answers(topic)
-    article = load_article(topic)
+    #article = load_article(topic)
     score = compute_score(user_answers, correct_answers)
     flat = flatten_answers(user_answers, correct_answers)
 
     # 🔥 NEW: detect attempt count
     attempt_number = count_user_attempts(user_id, topic)
 
+    if attempt_number >= 2:
+        return {
+            "feedback": None,
+            "attempt": attempt_number + 1,
+            "score": None,
+            "blocked": True
+        }
+    
     # Attempt 1 → formative → send to LLM
     feedback = None
-    if attempt_number == 0 and score < 1:
+    if attempt_number == 0 and score < 100:
        # feedback = get_feedback(article, correct_answers, user_answers)
         feedback = "Simulating feedback.."
 
@@ -87,13 +95,21 @@ def handle_submission(submission_payload):
     }
     record.update(flat)
 
-    use_google_sheets = False
     try:
-        _ = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
-        _ = st.secrets["GOOGLE_SHEET_ID"]
-        use_google_sheets = True
+        secrets_obj = getattr(st, "secrets", None)
+        use_google_sheets = (
+            secrets_obj is not None
+            and isinstance(secrets_obj, dict)
+            and "GOOGLE_SHEETS_CREDENTIALS" in secrets_obj
+            and "GOOGLE_SHEET_ID" in secrets_obj
+        )
     except Exception:
         use_google_sheets = False
+
+    # use_google_sheets = (
+    #     hasattr(st, "secrets")
+    #     and "GOOGLE_SHEETS_CREDENTIALS" in st.secrets
+    #     and "GOOGLE_SHEET_ID" in st.secrets)
 
     if use_google_sheets:
         save_submission_to_sheets(record)

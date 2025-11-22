@@ -46,31 +46,75 @@ def flatten_answers(user_answers, correct_answers):
     return flat
 
 def count_user_attempts(user_id, topic):
-    path = f"data/{topic}/submissions.jsonl"
+    # --- Detect Google Sheets availability safely ---
+    try:
+        secrets_obj = getattr(st, "secrets", None)
+        use_google_sheets = (
+            secrets_obj is not None
+            and isinstance(secrets_obj, dict)
+            and "GOOGLE_SHEETS_CREDENTIALS" in secrets_obj
+            and "GOOGLE_SHEET_ID" in secrets_obj
+        )
+    except Exception:
+        use_google_sheets = False
+
+    # --- Google Sheets attempt counting ---
+    if use_google_sheets:
+        try:
+            creds = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
+            gc = gspread.service_account_from_dict(creds)
+            sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
+            worksheet = sh.sheet1
+            data = worksheet.get_all_records()
+
+            return sum(
+                1 for row in data
+                if row.get("User ID") == user_id and row.get("Topic") == topic
+            )
+        except Exception as e:
+            print("Sheets attempt counting failed, falling back to local:", e)
+
+    # --- Local fallback (per user per topic) ---
+    path = f"submissions/submissions.jsonl"
     if not os.path.exists(path):
         return 0
+
     count = 0
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             try:
                 rec = json.loads(line)
-                if rec.get("user_id") == user_id:
+                if rec.get("user_id") == user_id and rec.get("topic") == topic:
                     count += 1
             except:
                 pass
+
     return count
 
+
+
 def save_submission_local(record, topic):
-    os.makedirs(f"data/{topic}", exist_ok=True)
-    with open(f"data/{topic}/submissions.jsonl", "a", encoding="utf-8") as f:
+    os.makedirs(f"submissions", exist_ok=True)
+    with open(f"submissions/submissions.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
         
 def save_submission_to_sheets(record):
-    # creds = json.loads(st.secrets["GOOGLE_SHEETS_CREDENTIALS"])
+    if not hasattr(st, "secrets"):
+        return False
+    if "GOOGLE_SHEETS_CREDENTIALS" not in st.secrets:
+        return False
+    if "GOOGLE_SHEET_ID" not in st.secrets:
+        return False
+
     creds = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
     gc = gspread.service_account_from_dict(creds)
     sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
-    worksheet = sh.sheet1 
+    worksheet = sh.sheet1
+
+    headers = ["User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"]
+    if len(worksheet.get_all_values()) == 0:
+        worksheet.append_row(headers)
+
     row = [
         record["user_id"],
         record["attempt"],
@@ -81,3 +125,4 @@ def save_submission_to_sheets(record):
     ]
 
     worksheet.append_row(row)
+    return True
