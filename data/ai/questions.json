@@ -1,0 +1,10 @@
+[
+  {
+    "question": "What is AI primarily concerned with?",
+    "options": ["Automation", "Simulating human intelligence", "Data storage", "Hardware design"]
+  },
+  {
+    "question": "Which field is NOT typically part of AI?",
+    "options": ["Machine learning", "Computer vision", "Astrophysics", "Natural language processing"]
+  }
+]
