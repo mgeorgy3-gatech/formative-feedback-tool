@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import load_article, load_questions
+from utils import (load_article, load_questions)
 from engine import handle_submission
 
 st.set_page_config(page_title="🧠 Reading Comprehension Quiz", layout="centered")
