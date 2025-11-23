@@ -20,7 +20,8 @@ if "feedback" not in st.session_state:
 if "attempt" not in st.session_state:
     st.session_state.attempt = None
 
-topic = "ai"
+# topic = "ai"
+topic = "gps"
 
 # ---------------------------------------------------------
 # Phone number page
@@ -83,7 +84,8 @@ st.title("🧠 Reading Comprehension Quiz")
 st.markdown(f"**User:** {st.session_state.user_id}")
 
 article = load_article(topic)
-st.markdown("### Article")
+# st.markdown("### Topic: Artificial Intelligence")
+st.markdown("### Topic: GPS Technology")
 st.write(article)
 
 st.markdown("---")
