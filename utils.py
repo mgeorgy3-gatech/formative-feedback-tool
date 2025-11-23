@@ -65,15 +65,18 @@ def count_user_attempts(user_id, topic):
             gc = gspread.service_account_from_dict(creds)
             sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
             worksheet = sh.sheet1
-            data = worksheet.get_all_records()
+            rows = worksheet.get_all_records(expected_headers=[
+                "User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"
+            ])
 
             return sum(
-                1 for row in data
-                if row.get("User ID") == user_id and row.get("Topic") == topic
+                1 for row in rows
+                if str(row.get("User ID", "")).strip() == str(user_id).strip()
+                and str(row.get("Topic", "")).strip() == str(topic).strip()
             )
         except Exception as e:
             print("Sheets attempt counting failed, falling back to local:", e)
-
+            
     # --- Local fallback (per user per topic) ---
     path = f"submissions/submissions.jsonl"
     if not os.path.exists(path):
@@ -110,7 +113,9 @@ def save_submission_to_sheets(record):
     worksheet = sh.sheet1
 
     headers = ["User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"]
-    if len(worksheet.get_all_values()) == 0:
+    existing = worksheet.get_all_values()
+    if not existing or existing[0] != headers:
+        worksheet.clear()
         worksheet.append_row(headers)
 
     row = [
