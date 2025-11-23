@@ -18,15 +18,11 @@ from utils import (
 
 load_dotenv()
 
-# LLM
 def get_client():
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-
 def get_feedback(article, correct_answers, user_answers):
     client = get_client()
-    #prompt = build_prompt(article, correct_answers, user_answers)
-
     response = client.chat.completions.create(
         model="gpt-5-nano",
         messages=[
@@ -36,37 +32,19 @@ def get_feedback(article, correct_answers, user_answers):
     )
     return response.choices[0].message.content
 
-
-# Save one line in a topic submissions.jsonl
-def save_submission(record, topic):
-    os.makedirs(f"data/{topic}", exist_ok=True)
-    with open(f"data/{topic}/submissions.jsonl", "a", encoding="utf-8") as f:
-        f.write(json.dumps(record) + "\n")
-
-
 def handle_submission(submission_payload):
-    """
-    submission_payload:
-    {
-        user_id,
-        topic,
-        answers,
-        num_questions
-    }
-    """
-
     user_id = submission_payload["user_id"]
     topic = submission_payload["topic"]
+    article = load_article(topic)
     user_answers = submission_payload["answers"]
 
     correct_answers = load_answers(topic)
-    #article = load_article(topic)
     score = compute_score(user_answers, correct_answers)
     flat = flatten_answers(user_answers, correct_answers)
 
-    # 🔥 NEW: detect attempt count
     attempt_number = count_user_attempts(user_id, topic)
 
+    # Block if already attempted twice (no saving, no feedback)
     if attempt_number >= 2:
         return {
             "feedback": None,
@@ -74,16 +52,14 @@ def handle_submission(submission_payload):
             "score": None,
             "blocked": True
         }
-    
-    # Attempt 1 → formative → send to LLM
+
+    # Attempt 1 feedback rule
     feedback = None
     if attempt_number == 0 and score < 100:
-       # feedback = get_feedback(article, correct_answers, user_answers)
-        feedback = "Simulating feedback.."
+        # feedback = get_feedback(article, correct_answers, user_answers)
+        feedback = "Simulated feedback.."
 
-    # Attempt 2 → NO feedback, just save
-    # Attempt >2 → allowed but no feedback (simple)
-
+    # Build stored record
     record = {
         "user_id": user_id,
         "topic": topic,
@@ -91,10 +67,8 @@ def handle_submission(submission_payload):
         "attempt": attempt_number + 1,
         "score": score,
         "user_answers": user_answers
-        #"feedback": feedback
     }
     record.update(flat)
-
     try:
         secrets_obj = getattr(st, "secrets", None)
         use_google_sheets = (
@@ -106,18 +80,14 @@ def handle_submission(submission_payload):
     except Exception:
         use_google_sheets = False
 
-    # use_google_sheets = (
-    #     hasattr(st, "secrets")
-    #     and "GOOGLE_SHEETS_CREDENTIALS" in st.secrets
-    #     and "GOOGLE_SHEET_ID" in st.secrets)
-
     if use_google_sheets:
         save_submission_to_sheets(record)
     else:
-        save_submission_local(record, topic)
+        save_submission_local(record)
 
     return {
-    "feedback": feedback,
-    "attempt": attempt_number + 1,
-    "score": score
+        "feedback": feedback,
+        "attempt": attempt_number + 1,
+        "score": score,
+        "blocked": False
     }

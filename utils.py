@@ -93,7 +93,7 @@ def count_user_attempts(user_id, topic):
 
 
 
-def save_submission_local(record, topic):
+def save_submission_local(record):
     os.makedirs(f"submissions", exist_ok=True)
     with open(f"submissions/submissions.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")

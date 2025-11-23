@@ -4,7 +4,6 @@ from engine import handle_submission
 
 st.set_page_config(page_title="🧠 Reading Comprehension Quiz", layout="centered")
 
-# ---------- SESSION ----------
 if "user_id" not in st.session_state:
     st.session_state.user_id = None
 
@@ -47,28 +46,21 @@ if not st.session_state.user_id and not st.session_state.quiz_started:
 
 # ---------------------------------------------------------
 # Thank you / results page
-# ---------------------------------------------------------
-# ---------------------------------------------------------
-# Thank you / results page
-# ---------------------------------------------------------
-# ---------------------------------------------------------
-# Thank you / results page
-# ---------------------------------------------------------
 if st.session_state.submitted:
-    st.title("🎉 Thank You!")
-
-    # ✅ Blocked (already took 2 attempts)
+    # Blocked (already took 2 attempts)
     if st.session_state.attempt >= 3:
-        st.markdown("### ✅ Quiz Completed")
-        st.markdown("You have already taken two attempts for this topic.")
+        st.title("Oops!")
+        st.markdown("You have already taken two attempts for this topic. Maybe try a different topic?")
         st.stop()
 
-    # ✅ Always show score when available
+    st.title("🎉 Thank You!")
+
+    # Always show score when available
     if st.session_state.score is not None:
         st.subheader("📊 Your Score")
         st.markdown(f"**{st.session_state.score}%**")
 
-    # ✅ Attempt 1 — feedback shown only if not perfect
+    # Attempt 1 — feedback shown only if not perfect
     if st.session_state.attempt == 1:
         if st.session_state.feedback:
             st.subheader("📘 Feedback")
@@ -76,7 +68,7 @@ if st.session_state.submitted:
         else:
             st.markdown("✅ Perfect score — no feedback needed!")
 
-    # ✅ Attempt 2 — no feedback
+    # Attempt 2 — no feedback
     elif st.session_state.attempt == 2:
         st.markdown("✅ Your second attempt has been submitted.")
         st.markdown("There is no feedback for the second attempt.")
@@ -106,7 +98,7 @@ for i, q in enumerate(questions):
     user_answers[i] = selected
     st.markdown("---")
 
-if st.button("✅ Submit Answers"):
+if st.button("Submit Answers"):
     payload = {
         "user_id": st.session_state.user_id,
         "topic": topic,
@@ -114,19 +106,15 @@ if st.button("✅ Submit Answers"):
         "num_questions": len(questions),
     }
 
-    # ✅ Show waiting indicator while processing
-    with st.spinner("🧠 Processing your submission..."):
+    with st.spinner("Processing your submission..."):
         result = handle_submission(payload)
 
-    # ✅ If user exceeded attempts
     if result.get("blocked"):
         st.session_state.submitted = True
         st.session_state.attempt = result.get("attempt")
         st.session_state.feedback = None
         st.session_state.score = None
-
     else:
-        # ✅ Normal case (attempt 1 or 2)
         st.session_state.feedback = result.get("feedback")
         st.session_state.attempt = result.get("attempt")
         st.session_state.score = result.get("score")
