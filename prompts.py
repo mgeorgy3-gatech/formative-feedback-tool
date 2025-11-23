@@ -65,7 +65,7 @@ Your feedback must:
 • remain concise and purposeful
 
 Structural requirements:
-• Only generate feedback for incorrect answers
+• Only generate feedback for incorrect answers. For correct answer, start the sentence with "Correct answer."
 • Number each feedback item according to the question number (starting at 1)
 • Write 2–4 sentences per feedback item
 • Do not produce any introductory or concluding text
