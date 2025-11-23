@@ -1,4 +1,3 @@
-# engine.py
 from openai import OpenAI
 import os, json, datetime as dt
 import streamlit as st
@@ -82,9 +81,9 @@ def handle_submission(submission_payload):
 
     write_result = False
     if use_google_sheets:
-        write_result = save_submission_to_sheets(record)
+        save_submission_to_sheets(record)
     else:
-        write_result = save_submission_local(record)
+        save_submission_local(record)
 
     if write_result == False:
         raise RuntimeError("Failed to save submission record")

@@ -113,9 +113,9 @@ def save_submission_to_sheets(record):
     worksheet = sh.sheet1
 
     headers = ["User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"]
+
     existing = worksheet.get_all_values()
-    if not existing or existing[0] != headers:
-        worksheet.clear()
+    if not existing:
         worksheet.append_row(headers)
 
     row = [
