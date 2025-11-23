@@ -111,12 +111,6 @@ def save_submission_to_sheets(record):
     sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
     worksheet = sh.sheet1
 
-    headers = ["User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"]
-
-    existing_headers = worksheet.row_values(1)
-    if existing_headers != headers:
-        worksheet.insert_row(headers, 1)
-
     row = [
         record["user_id"],
         record["attempt"],
@@ -128,3 +122,4 @@ def save_submission_to_sheets(record):
 
     worksheet.append_row(row)
     return True
+
