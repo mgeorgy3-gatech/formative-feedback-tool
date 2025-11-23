@@ -56,8 +56,8 @@ def handle_submission(submission_payload):
     # Attempt 1 feedback rule
     feedback = None
     if attempt_number == 0 and score < 100:
-        # feedback = get_feedback(article, correct_answers, user_answers)
-        feedback = "Simulated feedback.."
+        feedback = get_feedback(article, correct_answers, user_answers)
+        #feedback = "Simulated feedback.."
 
     # Build stored record
     record = {

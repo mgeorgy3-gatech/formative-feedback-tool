@@ -1,0 +1,42 @@
+[
+  {
+    "question": "What does a GPS receiver use to determine its location?",
+    "options": ["Signals from satellites", "Timing information", "Mobile data networks", "Wi-Fi routers"]
+  },
+  {
+    "question": "How does a GPS device calculate its distance from satellites?",
+    "options": ["By measuring signal travel time", "By comparing map colors", "By monitoring battery usage", "By detecting temperature changes"]
+  },
+  {
+    "question": "Why does GPS typically require signals from at least four satellites?",
+    "options": ["To accurately pinpoint position", "To calculate elevation and timing", "To download map updates", "To improve smartphone performance"]
+  },
+  {
+    "question": "Which factors can interfere with GPS accuracy?",
+    "options": ["Tall buildings", "Mountains", "Weather conditions", "Fully charged batteries"]
+  },
+  {
+    "question": "How do digital maps contribute to GPS navigation?",
+    "options": ["They convert position data into meaningful routes", "They provide turn-by-turn directions", "They generate satellite timing signals", "They prevent signal interference"]
+  },
+  {
+    "question": "Which additional technologies may support navigation when GPS signals weaken?",
+    "options": ["Accelerometers", "Compasses", "Solar panels", "Speakers"]
+  },
+  {
+    "question": "What is true about GPS and internet connectivity?",
+    "options": ["GPS works without internet", "Internet improves map loading", "Traffic updates may require data", "GPS requires Wi-Fi to function"]
+  },
+  {
+    "question": "Which statements reflect common misunderstandings about GPS?",
+    "options": ["That it requires mobile data to work", "That it operates independently of internet", "That it uses satellite timing signals", "That it relies only on maps to locate users"]
+  },
+  {
+    "question": "What components work together to guide users through GPS navigation?",
+    "options": ["Satellite signals", "Mathematical calculations", "Mapping data", "Radio broadcast shows"]
+  },
+  {
+    "question": "Which devices commonly contain GPS receivers?",
+    "options": ["Smartphones", "Car navigation systems", "Wrist-mounted fitness trackers", "Microwave ovens"]
+  }
+]
