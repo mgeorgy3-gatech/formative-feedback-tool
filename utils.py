@@ -98,6 +98,7 @@ def save_submission_local(record):
     os.makedirs(f"submissions", exist_ok=True)
     with open(f"submissions/submissions.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
+    return True
         
 def save_submission_to_sheets(record):
     if not hasattr(st, "secrets"):
