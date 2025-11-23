@@ -65,15 +65,16 @@ def count_user_attempts(user_id, topic):
             gc = gspread.service_account_from_dict(creds)
             sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
             worksheet = sh.sheet1
-            rows = worksheet.get_all_records()
-
+            rows = worksheet.get_all_values()
+            data_rows = rows[1:]
             return sum(
-                1 for row in rows
-                if str(row.get("User ID", "")).strip() == str(user_id).strip()
-                and str(row.get("Topic", "")).strip() == str(topic).strip()
+                1 for row in data_rows
+                if len(row) >= 3
+                and str(row[0]).strip() == str(user_id).strip()
+                and str(row[2]).strip() == str(topic).strip()
             )
         except Exception as e:
-            print("Sheets attempt counting failed, falling back to local:", e)
+            raise RuntimeError(f"Failed to read from Google Sheets: {e}")
             
     # --- Local fallback (per user per topic) ---
     path = f"submissions/submissions.jsonl"
