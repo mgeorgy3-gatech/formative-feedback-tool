@@ -68,7 +68,7 @@ Structural requirements:
 • Provide feedback for every question
 • For correct answers, write one brief sentence beginning with “Correct answer.”
 • For incorrect asnwers, Write 2–4 sentences per incorrect question
-• Number each feedback item according to the question number (starting at 1 through 10)
+• Number each feedback item according to the question number. Start numbering at 1 (notice that questions are zero-based. Just shift by one.)
 • Do not produce any introductory or concluding text
 • Do not restate or list correct answers directly
 
