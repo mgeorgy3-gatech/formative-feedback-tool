@@ -91,8 +91,6 @@ def count_user_attempts(user_id, topic):
 
     return count
 
-
-
 def save_submission_local(record):
     os.makedirs(f"submissions", exist_ok=True)
     with open(f"submissions/submissions.jsonl", "a", encoding="utf-8") as f:

@@ -80,11 +80,15 @@ def handle_submission(submission_payload):
     except Exception:
         use_google_sheets = False
 
+    write_result = False
     if use_google_sheets:
-        save_submission_to_sheets(record)
+        write_result = save_submission_to_sheets(record)
     else:
-        save_submission_local(record)
+        write_result = save_submission_local(record)
 
+    if write_result == False:
+        raise RuntimeError("Failed to save submission record")
+    
     return {
         "feedback": feedback,
         "attempt": attempt_number + 1,
