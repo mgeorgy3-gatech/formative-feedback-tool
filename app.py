@@ -1,3 +1,4 @@
+#app.py
 import streamlit as st
 from utils import (load_article, load_questions)
 from engine import handle_submission
@@ -48,7 +49,7 @@ if not st.session_state.user_id and not st.session_state.quiz_started:
 # Thank you / results page
 if st.session_state.submitted:
     # Blocked (already took 2 attempts)
-    if st.session_state.attempt >= 3:
+    if st.session_state.attempt >= 2:
         st.title("Oops!")
         st.markdown("You have already taken two attempts for this topic. Maybe try a different topic?")
         st.stop()

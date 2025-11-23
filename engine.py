@@ -1,3 +1,4 @@
+#engine.py
 from openai import OpenAI
 import os, json, datetime as dt
 import streamlit as st
@@ -69,12 +70,11 @@ def handle_submission(submission_payload):
     }
     record.update(flat)
     try:
-        secrets_obj = getattr(st, "secrets", None)
+        #secrets_obj = getattr(st, "secrets", None)
         use_google_sheets = (
-            secrets_obj is not None
-            and isinstance(secrets_obj, dict)
-            and "GOOGLE_SHEETS_CREDENTIALS" in secrets_obj
-            and "GOOGLE_SHEET_ID" in secrets_obj
+            hasattr(st, "secrets")
+            and "GOOGLE_SHEETS_CREDENTIALS" in st.secrets
+            and "GOOGLE_SHEET_ID" in st.secrets
         )
     except Exception:
         use_google_sheets = False

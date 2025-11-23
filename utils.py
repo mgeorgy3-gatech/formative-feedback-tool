@@ -1,3 +1,4 @@
+#utils.py
 import json
 import os
 import gspread
@@ -48,12 +49,11 @@ def flatten_answers(user_answers, correct_answers):
 def count_user_attempts(user_id, topic):
     # --- Detect Google Sheets availability safely ---
     try:
-        secrets_obj = getattr(st, "secrets", None)
+        #secrets_obj = getattr(st, "secrets", None)
         use_google_sheets = (
-            secrets_obj is not None
-            and isinstance(secrets_obj, dict)
-            and "GOOGLE_SHEETS_CREDENTIALS" in secrets_obj
-            and "GOOGLE_SHEET_ID" in secrets_obj
+            hasattr(st, "secrets")
+            and "GOOGLE_SHEETS_CREDENTIALS" in st.secrets
+            and "GOOGLE_SHEET_ID" in st.secrets
         )
     except Exception:
         use_google_sheets = False
@@ -65,9 +65,7 @@ def count_user_attempts(user_id, topic):
             gc = gspread.service_account_from_dict(creds)
             sh = gc.open_by_key(st.secrets["GOOGLE_SHEET_ID"])
             worksheet = sh.sheet1
-            rows = worksheet.get_all_records(expected_headers=[
-                "User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"
-            ])
+            rows = worksheet.get_all_records()
 
             return sum(
                 1 for row in rows
@@ -115,9 +113,9 @@ def save_submission_to_sheets(record):
 
     headers = ["User ID", "Attempt", "Topic", "Score", "Timestamp", "User Answers"]
 
-    existing = worksheet.get_all_values()
-    if not existing:
-        worksheet.append_row(headers)
+    existing_headers = worksheet.row_values(1)
+    if existing_headers != headers:
+        worksheet.insert_row(headers, 1)
 
     row = [
         record["user_id"],
