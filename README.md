@@ -1,5 +1,5 @@
 **
-CS 6795: Cognitive Science
+CS 6795: Cognitive Science | 
 Formative Feedback Tool**
 
 To run the application:
