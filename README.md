@@ -1,3 +1,7 @@
+**
+CS 6795: Cognitive Science
+Formative Feedback Tool**
+
 To run the application:
 1. Install required packages
 2. Run "streamlit run app.py"
