@@ -59,7 +59,6 @@ def handle_submission(submission_payload):
         feedback = get_feedback(article, correct_answers, user_answers)
         #feedback = "Simulated feedback.."
 
-    # Build stored record
     record = {
         "user_id": user_id,
         "topic": topic,

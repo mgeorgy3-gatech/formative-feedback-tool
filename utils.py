@@ -22,7 +22,6 @@ def load_answers(topic):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 def compute_score(user_answers, correct_answers):
     normalized_correct = {int(k): (v if isinstance(v, list) else [v])
                           for k, v in correct_answers.items()}
@@ -35,7 +34,6 @@ def compute_score(user_answers, correct_answers):
             correct += 1
     return (100 * correct / total) if total > 0 else 0
 
-
 def flatten_answers(user_answers, correct_answers):
     flat = {}
     normalized_correct = {int(k): (v if isinstance(v, list) else [v])
@@ -47,7 +45,6 @@ def flatten_answers(user_answers, correct_answers):
     return flat
 
 def count_user_attempts(user_id, topic):
-    # --- Detect Google Sheets availability safely ---
     try:
         #secrets_obj = getattr(st, "secrets", None)
         use_google_sheets = (
@@ -58,7 +55,6 @@ def count_user_attempts(user_id, topic):
     except Exception:
         use_google_sheets = False
 
-    # --- Google Sheets attempt counting ---
     if use_google_sheets:
         try:
             creds = st.secrets["GOOGLE_SHEETS_CREDENTIALS"]
@@ -76,7 +72,6 @@ def count_user_attempts(user_id, topic):
         except Exception as e:
             raise RuntimeError(f"Failed to read from Google Sheets: {e}")
             
-    # --- Local fallback (per user per topic) ---
     path = f"submissions/submissions.jsonl"
     if not os.path.exists(path):
         return 0
@@ -123,4 +118,3 @@ def save_submission_to_sheets(record):
 
     worksheet.append_row(row)
     return True
-

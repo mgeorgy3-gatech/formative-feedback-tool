@@ -23,9 +23,7 @@ if "attempt" not in st.session_state:
 # topic = "ai"
 topic = "gps"
 
-# ---------------------------------------------------------
-# Phone number page
-# ---------------------------------------------------------
+# Enter phone number page (used as ID)
 if not st.session_state.user_id and not st.session_state.quiz_started:
     st.title("📱 Enter Your Phone Number")
 
@@ -46,7 +44,6 @@ if not st.session_state.user_id and not st.session_state.quiz_started:
 
     st.stop()
 
-# ---------------------------------------------------------
 # Thank you / results page
 if st.session_state.submitted:
     # Blocked (already took 2 attempts)
@@ -57,7 +54,6 @@ if st.session_state.submitted:
 
     st.title("🎉 Thank You!")
 
-    # Always show score when available
     if st.session_state.score is not None:
         st.subheader("📊 Your Score")
         st.markdown(f"**{st.session_state.score}%**")
@@ -77,9 +73,7 @@ if st.session_state.submitted:
 
     st.stop()
 
-# ---------------------------------------------------------
 # Quiz page
-# ---------------------------------------------------------
 st.title("🧠 Reading Comprehension Quiz")
 st.markdown(f"**User:** {st.session_state.user_id}")
 
