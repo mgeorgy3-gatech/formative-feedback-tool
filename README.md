@@ -1,6 +1,4 @@
-**
-CS 6795: Cognitive Science | 
-Formative Feedback Tool**
+CS 6795: Cognitive Science | Formative Feedback Tool
 
 To run the application:
 1. Install required packages
